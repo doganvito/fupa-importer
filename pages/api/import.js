@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer brw_ai_9f363725-83c4-4d84-9417-3b87b88c527d:e9cb38a7-b83c-4054-a196-9aaa88abf4e5', //
+        'Authorization': 'Bearer brw_ai_', //
       },
       body: JSON.stringify({
         input: { url },
