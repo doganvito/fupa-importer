@@ -6,28 +6,41 @@ export default async function handler(req, res) {
   const { url } = req.body;
 
   if (!url || !url.startsWith('https://www.fupa.net/player/')) {
-    return res.status(400).json({ error: 'Ungültiger Link' });
+    return res.status(400).json({ error: 'Ungültiger FuPa-Link' });
   }
 
   try {
-    const dummyData = {
-      name: 'Dogan Bezek',
-      club: 'TV Hassendorf',
-      appearances: 12,
-      goals: 4,
-      assists: 3,
-      minutes: 873
-    };
+    // Browse.ai API-Aufruf vorbereiten
+    const browseRes = await fetch('https://api.browse.ai/v2/tasks/2e3d73ea-b238-44b0-9638-0db8368e677f/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'https://dashboard.browse.ai/workspaces/dogan-bezek/robots/2e3d73ea-b238-44b0-9638-0db8368e677f/run'
+      },
+      body: JSON.stringify({
+        input: { url },
+        immediate: true
+      })
+    });
 
-    const markdown = `**👤 Spieler:** ${dummyData.name}
-**🏟 Verein:** ${dummyData.club}
-**📅 Einsätze:** ${dummyData.appearances}
-**🥅 Tore:** ${dummyData.goals}
-**🎯 Assists:** ${dummyData.assists}
-**⏱ Minuten gespielt:** ${dummyData.minutes}`;
+    const browseData = await browseRes.json();
+
+    // Ergebnisdaten extrahieren
+    const result = browseData?.result?.tables?.[0]?.rows?.[0];
+    if (!result) {
+      return res.status(500).json({ error: 'Keine Daten von Browse.ai erhalten.' });
+    }
+
+    const markdown = `**👤 Spieler:** ${result.name}
+**🏟 Verein:** ${result.club}
+**📅 Einsätze:** ${result.appearances}
+**🥅 Tore:** ${result.goals}
+**🎯 Assists:** ${result.assists}
+**⏱ Minuten gespielt:** ${result.minutes}`;
 
     res.status(200).json({ markdown });
   } catch (error) {
-    res.status(500).json({ error: 'Fehler beim Abrufen der Daten' });
+    console.error('Browse.ai Fehler:', error);
+    res.status(500).json({ error: 'Fehler bei der Datenabfrage' });
   }
 }
