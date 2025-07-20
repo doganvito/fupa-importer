@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.BROWSE_AI_API_KEY}`
+        'Authorization': `Bearer ${process.env.08cb8cdf-52e9-4bd2-8369-31e998a82938:62ec6cd7-2fff-4770-a162-634404553657}`
       },
       body: JSON.stringify({
         input: { url },
